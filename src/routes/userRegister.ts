@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import db from '../connection';
+import bcrypt from 'bcrypt';
 
 const router = Router();
-
+const saltRounds = 10; 
 router.post('/userregister', async (req: Request, res: Response, next: NextFunction) => {
   const { 
     first_name, 
@@ -26,11 +27,12 @@ router.post('/userregister', async (req: Request, res: Response, next: NextFunct
   }
 
   try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const [result]: any = await db.query(
       `INSERT INTO adminusers 
        (first_name, last_name, mobile, email, address, username, password, role_id, dob) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-      [first_name, last_name, mobile, email, address, username, password, role_id, dob]
+      [first_name, last_name, mobile, email, address, username, hashedPassword, role_id, dob]
     );
     
     res.status(200).json({ 
@@ -88,6 +90,7 @@ router.get('/userfetch', async (req: Request, res: Response, next: NextFunction)
       res.status(500).json({ success: false, message: 'Server error' });
     }
   });
+
   
 
 export default router;
