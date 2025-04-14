@@ -18,7 +18,7 @@ router.post('/uploadexcel', upload.single('excelFile'), async (req: Request, res
   
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.load(req.file.buffer);
-      const worksheet = workbook.worksheets[0];
+      const worksheet = workbook.worksheets[0]; 
   
       const customers: { name: string; mobile: string }[] = [];
   
@@ -57,7 +57,7 @@ router.post('/uploadexcel', upload.single('excelFile'), async (req: Request, res
   router.get('/fetchexcel', async (req: Request, res: Response) => {
       try {
         const [rows]: any = await db.query(
-          'SELECT customer_id, name,mobile FROM customer WHERE is_active = 1'
+          'SELECT customer_id, name,mobile,DATE_FORMAT(created_at, "%d-%m-%Y %H:%i:%s") AS created_at,Proccess  FROM customer WHERE is_active = 1 AND Proccess = 0'
         );
     
         res.status(200).json({ success: true, data: rows });
@@ -66,5 +66,66 @@ router.post('/uploadexcel', upload.single('excelFile'), async (req: Request, res
         res.status(500).json({ success: false, message: 'Server error' });
       }
     });
-  
+    
+    router.post('/uploadsingleexcel', async (req: Request, res: Response) => {
+      const customers: { name: string; mobile: string }[] = req.body;
+    
+      // Check if body is a non-empty array
+      if (!Array.isArray(customers) || customers.length === 0) {
+         res.status(400).json({
+          success: false,
+          message: 'Request body must be a non-empty array of customer objects',
+        });
+        return;
+      }
+    
+      // Validate each customer object
+      const invalidEntries = customers.filter(c => !c.name || !c.mobile);
+      if (invalidEntries.length > 0) {
+         res.status(400).json({
+          success: false,
+          message: 'Each customer must have both name and mobile',
+          invalidEntries,
+        });
+        return;
+      }
+    
+      // Prepare values for bulk insert
+      const values = customers.map(c => [c.name, c.mobile]);
+    
+      try {
+        const [result]: any = await db.query(
+          `INSERT INTO customer (name, mobile) VALUES ?`,
+          [values] // Note: Values is nested array
+        );
+    
+        res.status(200).json({
+          success: true,
+          message: 'Customers inserted successfully',
+          affectedRows: result.affectedRows,
+          insertIdStart: result.insertId,
+        });
+      } catch (error: unknown) {
+        console.error('Error inserting customers:', error);
+    
+        if (error instanceof Error) {
+          const mysqlError = error as { code?: string };
+    
+          if (mysqlError.code === 'ER_DUP_ENTRY') {
+             res.status(409).json({
+              success: false,
+              message: 'Duplicate entry found (name or mobile already exists)',
+            });
+            return;
+          }
+        }
+    
+        res.status(500).json({
+          success: false,
+          message: 'Server error while inserting customers',
+        });
+      }
+    });
+    
+    
 export default router;
