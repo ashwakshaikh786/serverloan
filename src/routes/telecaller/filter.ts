@@ -5,18 +5,11 @@ const router = express.Router();
 
 router.use(express.json());
 
-router.post('/teleassignList', async (req: Request, res: Response) => {
+router.get('/TeleFilter', async (req: Request, res: Response) => {
   try {
-    const { userId } = req.body; 
-
-    if (!userId) {
-       res.status(400).json({ success: false, message: 'User ID is required' });
-       return;
-    }
 
     const [rows]: any = await db.query(
-      'SELECT tele_id, customer_id, user_id, name, mobile,loanamount,city,pincode, Proccess, is_active FROM telecallercustomer WHERE is_active = 1 AND Proccess = 0 AND user_id = ?',
-      [userId]
+      'SELECT tele_id, customer_id, user_id, name, mobile,loanamount,city,pincode, Proccess, is_active,DATE_FORMAT(created_at, "%d-%m-%Y %H:%i:%s") AS created_at FROM telecallercustomer WHERE is_active = 1 ',
     );
 
     if (rows.length === 0) {
