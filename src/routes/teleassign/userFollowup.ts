@@ -6,7 +6,7 @@ import moment from 'moment-timezone';
 const router = Router();
 
 
-router.post('/nextfollowup', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/nextfollowup', async (req: Request, res   : Response, next: NextFunction) => {
   const {
     tele_id,
     customer_id,
@@ -45,7 +45,7 @@ router.post('/nextfollowup', async (req: Request, res: Response, next: NextFunct
       ]
     );
 
-    res.status(200).json({
+    res.status(200).json({  
       success: true,
       message: 'Follow-up inserted',
       id: result.insertId,
@@ -55,4 +55,17 @@ router.post('/nextfollowup', async (req: Request, res: Response, next: NextFunct
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
+router.get('/currentupdate', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const [rows]: any = await db.query(
+        'SELECT currentupdate_id, currentupdatename FROM currentupdate '
+      );
+  
+      res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
 export default router;
