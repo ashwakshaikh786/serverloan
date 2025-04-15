@@ -48,7 +48,7 @@ router.post('/login', async (req: Request, res: Response) => {
         }
 
         const user = users[0];
-        console.log('Found user:', user.username);
+        console.log('Found user:', user.user_id);
 
         // Check if account is active
         if (!user.is_active) {
@@ -75,6 +75,7 @@ router.post('/login', async (req: Request, res: Response) => {
         // Prepare response data
         const userData = {
             id: user.id,
+            user_id : user.user_id,
             username: user.username,
             email: user.email,
             role_id: user.role_id,
