@@ -10,6 +10,7 @@ import TeleAssignList from './routes/telecaller/teleassign'
 import NextFollowup from './routes/teleassign/userFollowup'
 import GetFollowUp from './routes/teleassign/GetFollowUp'
 import TeleFilter from './routes/telecaller/filter'
+
 const app = express();
 
 app.use(cors());
@@ -27,6 +28,7 @@ app.use('/api/telecaller/', TeleFilter);
 app.use('/api/telecaller/assign', TeleAssignList);
 app.use('/api/telecaller/assign', NextFollowup);
 app.use('/api/telecaller/assign', GetFollowUp);
+
 
 
 app.listen(5000, () => {
