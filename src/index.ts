@@ -6,6 +6,7 @@ import userRegister from './routes/userRegister';
 import Login from './routes/login/userLogin';
 import uploadexcel from  './routes/userexcel/userExcelcontrol'
 import assigncustomer from './routes/assigncustomer/assingcustomer'
+import TeleAssignList from './routes/telecaller/teleassign'
 const app = express();
 
 app.use(cors());
@@ -19,6 +20,7 @@ app.use('/api/user', userRegister);
 app.use('/api/user', Login);
 app.use('/api/upload', uploadexcel);
 app.use('/api/assign', assigncustomer);
+app.use('/api/telecaller/assign', TeleAssignList);
 
 
 app.listen(5000, () => {

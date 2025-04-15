@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import db from '../../connection';
+import { checkServerIdentity } from 'tls';
 
 const router = Router();router.post('/assigncustomer', async (req: Request, res: Response, next: NextFunction) => {
-    const { customer_id, user_id, name, mobile } = req.body;
+    const { customer_id, user_id, name, mobile,loanamount,city,pincode } = req.body;
   
     if (!customer_id || !user_id || !name || !mobile) {
         res.status(400).json({ success: false, message: 'All fields are required' });return;
@@ -17,8 +18,8 @@ const router = Router();router.post('/assigncustomer', async (req: Request, res:
 
         // 1. Assign customer to telecaller
         const [insertResult]: any = await connection.query(
-            'INSERT INTO telecallercustomer (customer_id, user_id, name, mobile) VALUES (?, ?, ?, ?)',
-            [customer_id, user_id, name, mobile]
+            'INSERT INTO telecallercustomer (customer_id, user_id, name, mobile, loanamount, city, pincode) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [customer_id, user_id, name, mobile, loanamount, city,pincode] 
         );
 
         // 2. Update customer process status
