@@ -46,6 +46,45 @@ const router = Router();router.post('/assigncustomer', async (req: Request, res:
         if (connection) connection.release();
     }
 });
+router.get('/AdminassignListCount', async (req: Request, res: Response) => {
+    try {
+      // Updated: Removed userId usage, not needed anymore
+  
+      // Query to get the counts for different conditions across all users
+      const [counts]: any = await db.query(
+        `SELECT 
+          SUM(CASE WHEN n.nextfollowup_dt = CURDATE() OR n.nextfollowup_dt IS NULL THEN 1 ELSE 0 END) AS today_or_null_count,
+          SUM(CASE WHEN n.nextfollowup_dt < CURDATE() THEN 1 ELSE 0 END) AS past_count,
+          SUM(CASE WHEN n.nextfollowup_dt > CURDATE() THEN 1 ELSE 0 END) AS future_count,
+          COUNT(*) AS total_count
+        FROM 
+          telecallercustomer t
+        LEFT JOIN 
+          (
+            SELECT nf.*
+            FROM nextfollowup nf
+            INNER JOIN (
+              SELECT tele_id, MAX(nextfollowup_id) AS max_id
+              FROM nextfollowup
+              GROUP BY tele_id
+            ) latest ON nf.tele_id = latest.tele_id AND nf.nextfollowup_id = latest.max_id
+          ) n ON t.tele_id = n.tele_id
+        WHERE 
+          t.is_active = 1 
+          AND t.Proccess = 0
+        `
+      );
+  
+      res.status(200).json({ 
+        success: true,
+        counts: counts[0] 
+      });
+  
+    } catch (error) {
+      console.error('Error fetching teleassignListCount:', error);  
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
   
 
 export default router;
