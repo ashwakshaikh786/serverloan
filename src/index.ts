@@ -14,7 +14,7 @@ import TeleFilter from './routes/telecaller/filter'
 const app = express();
 
 app.use(cors({
-  origin: 'https://loanweb.cubisysit.com/', // or "*" for dev
+  origin: '*', // or "*" for dev
   credentials: true
 }));
 app.use(express.json());
