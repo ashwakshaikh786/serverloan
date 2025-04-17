@@ -142,6 +142,36 @@ router.put('/currentupdate/update/:id', async (req: Request, res: Response) => {
 });
 
 
+router.post('/currentupdate/create', async (req: Request, res: Response) => {
+  const { currentupdatename } = req.body;
+
+  if (!currentupdatename) {
+     res.status(400).json({ success: false, message: 'Update name is required' });
+     return;
+  }
+
+  try {
+    const [result]: any = await db.query(
+      'INSERT INTO currentupdate (currentupdatename) VALUES (?)',
+      [currentupdatename]
+    );
+
+    const insertedId = result.insertId;
+
+    // Fetch and return the newly inserted record
+    const [rows]: any = await db.query(
+      'SELECT * FROM currentupdate WHERE currentupdate_id = ?',
+      [insertedId]
+    );
+
+    res.status(201).json({ success: true, message: 'Follow-up created', data: rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+
 
 
 export default router;
