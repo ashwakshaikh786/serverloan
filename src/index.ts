@@ -13,7 +13,10 @@ import TeleFilter from './routes/telecaller/filter'
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*', // or "*" for dev
+  credentials: true
+}));
 app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Welcome to the API');
