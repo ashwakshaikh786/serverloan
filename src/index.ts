@@ -10,6 +10,7 @@ import TeleAssignList from './routes/telecaller/teleassign'
 import NextFollowup from './routes/teleassign/userFollowup'
 import GetFollowUp from './routes/teleassign/GetFollowUp'
 import TeleFilter from './routes/telecaller/filter'
+import uploadbatchexcel from  './routes/userexcel/userBatchExcelcontrol'
 
 const app = express();
 
@@ -31,7 +32,7 @@ app.use('/api/telecaller/', TeleFilter);
 app.use('/api/telecaller/assign', TeleAssignList);
 app.use('/api/telecaller/assign', NextFollowup);
 app.use('/api/telecaller/assign', GetFollowUp);
-
+app.use('/api/upload', uploadbatchexcel);
 
 
 app.listen(5000, () => {

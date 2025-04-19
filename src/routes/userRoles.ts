@@ -29,7 +29,7 @@ router.get('/roles', async (req: Request, res: Response, next: NextFunction) => 
            a.password, 
            a.role_id, 
            r.role_name, 
-           a.dob
+           DATE_FORMAT(a.dob, "%d-%m-%Y") AS dob
          FROM adminusers a
          LEFT JOIN rolemaster r ON a.role_id = r.role_id
          WHERE a.is_active = 1 AND a.role_id = 2` 
